@@ -1,9 +1,5 @@
-import psycopg2
-import os
+from connection.postgres import cur
 
-conn = psycopg2.connect(os.getenv('POSTGRES_URI'))
-conn.autocommit = True
-cur = conn.cursor()
 
 try:
     cur.execute("CREATE TABLE IF NOT EXISTS test (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), num integer, data varchar);")
