@@ -1,4 +1,6 @@
-from data.get_raw import GetRawData
+from data.index import GetRawData
+from dotenv import load_dotenv
+load_dotenv()
 
 if (__name__ == "__main__"):
       print("Hello World")
