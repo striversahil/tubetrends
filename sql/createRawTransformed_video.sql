@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXIST video (
       viewCount VARCHAR,
       likeCount VARCHAR,
       commentCount VARCHAR,
-      timestamp timestamp
+      timestamp timestamp default now()
 )

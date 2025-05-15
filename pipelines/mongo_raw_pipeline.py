@@ -12,7 +12,7 @@ def StoreTrending(data : dict):
             Db["Trending"].insert_one(trendingData)
             return True
       except :
-            return None
+            return False
       
 # data = getTrending(regionCode)
 # StoreTrending(data)

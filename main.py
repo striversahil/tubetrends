@@ -1,5 +1,6 @@
 from data.index import getTrending
 from pipelines.mongo_raw_pipeline import StoreTrending 
+from pipelines.storing_rawTransformed import StoreRawTransformed
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,4 +13,6 @@ if (__name__ == "__main__"):
         res = StoreTrending(data)
         if res:
             print("Data Stored Successfully")
+            StoreRawTransformed(data=data)
+
             
