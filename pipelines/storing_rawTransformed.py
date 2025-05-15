@@ -1,6 +1,7 @@
 # from connection.postgres import cur
 from os import path
 from connection.postgres import cur
+import json
 
 
 def CreateTableandInsert() -> dict | bool:
@@ -22,19 +23,61 @@ def CreateTableandInsert() -> dict | bool:
         with open(base_path + "/sql/insertRawTransformed_video.sql", "r") as f:
             video = f.read()
 
-        return {trending, video}
+        return {"trending": trending, "video": video}
 
     except Exception as e:
         print("Something went wrong 😬: \n", e)
         return False
 
 
-def StoreRawTransformed(data: dict):
+def StoreRawTransformed(data: dict) -> None:
+    """
+    Storing the transformed data in PostgreSQL
+    """
     try:
         res = CreateTableandInsert()
         if res is not False:
-            cur.execute(res[0], [data])
-            cur.execute(res[1], [data])
+            cur.execute(res["trending"], ([json.dumps(data)]))
+            trending_id = cur.fetchone()[0]
+
+            for item in data["items"]:
+                tags = []
+                if "tags" in item["snippet"]:
+                    tags = item["snippet"]["tags"]
+                video = {
+                    "videoId": item["id"],
+                    "title": item["snippet"]["title"],
+                    "trendingId": trending_id,
+                    "publishedAt": item["snippet"]["publishedAt"],
+                    "channelId": item["snippet"]["channelId"],
+                    "channelName": item["snippet"]["channelTitle"],
+                    "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
+                    "tags": tags,
+                    "duration": item["contentDetails"]["duration"],
+                    "viewCount": item["statistics"]["viewCount"],
+                    "likeCount": item["statistics"]["likeCount"],
+                    "commentCount": item["statistics"]["commentCount"],
+                }
+                cur.execute(
+                    res["video"],
+                    (
+                        video["videoId"],
+                        video["title"],
+                        video["trendingId"],
+                        video["publishedAt"],
+                        video["channelId"],
+                        video["channelName"],
+                        video["thumbnail"],
+                        json.dumps(video["tags"]),
+                        video["duration"],
+                        video["viewCount"],
+                        video["likeCount"],
+                        video["commentCount"],
+                    ),
+                )
+
+            print("Data Stored Successfully")
+            # cur.execute(res[1], [data])
 
     except Exception as e:
         print("Something went wrong 😬: \n", e)

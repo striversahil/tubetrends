@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXIST trending (
+CREATE TABLE IF NOT EXISTS trending (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
       trending_data JSONB,
-      timestamp timestamp,
+      timestamp TIMESTAMP DEFAULT now()
 );

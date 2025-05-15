@@ -1,4 +1,4 @@
-INSERT INTO video (video_id, title, trending_id, published_at, channel_id, channel_name, thumbnail, tags, duration, view_count, like_count, comment_count,) VALUES (
+INSERT INTO video (videoId, title, trending_id, publishedAt, channelId, channelName, thumbnail, tags, duration, viewCount, likeCount, commentCount) VALUES (
     %s,
     %s,
     %s,
@@ -12,3 +12,4 @@ INSERT INTO video (video_id, title, trending_id, published_at, channel_id, chann
     %s,
     %s
 )
+RETURNING videoId;
