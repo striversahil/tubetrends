@@ -41,9 +41,6 @@ def StoreRawTransformed(data: dict) -> None:
             trending_id = cur.fetchone()[0]
 
             for item in data["items"]:
-                tags = []
-                if "tags" in item["snippet"]:
-                    tags = item["snippet"]["tags"]
                 video = {
                     "videoId": item["id"],
                     "title": item["snippet"]["title"],
@@ -52,11 +49,11 @@ def StoreRawTransformed(data: dict) -> None:
                     "channelId": item["snippet"]["channelId"],
                     "channelName": item["snippet"]["channelTitle"],
                     "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
-                    "tags": tags,
-                    "duration": item["contentDetails"]["duration"],
-                    "viewCount": item["statistics"]["viewCount"],
-                    "likeCount": item["statistics"]["likeCount"],
-                    "commentCount": item["statistics"]["commentCount"],
+                    "tags": item["snippet"].get("tags", []),
+                    "duration": item["contentDetails"].get("duration", "PT0S"),
+                    "viewCount": item["statistics"].get("viewCount", 0),
+                    "likeCount": item["statistics"].get("likeCount", 0),
+                    "commentCount": item["statistics"].get("commentCount", 0),
                 }
                 cur.execute(
                     res["video"],
