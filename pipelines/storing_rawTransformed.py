@@ -2,19 +2,28 @@
 from os import path
 from connection.postgres import cur
 
-def CreateTable():
+def CreateTableandInsert() -> dict | bool:
     try:
         pat = path.dirname(path.realpath(__file__))
         pth = pat.split("/")[:-1]
         ph = "/".join(pth)
+
+        video = None
+        trending = None
 
         with open(ph + "/sql/createRawTransformed_trending.sql", "r") as f:
             cur.execute(f.read())
 
         with open(ph + "/sql/createRawTransformed_video.sql", "r") as f:
             cur.execute(f.read())
+
+        with open(ph + "/sql/insertRawTransformed_trending.sql", "r") as f:
+            trending = f.read()
+
+        with open(ph + "/sql/insertRawTransformed_video.sql", "r") as f:
+            video = f.read()
         
-        return True
+        return { trending, video }
         
     except Exception as e:
         print("Something went wrong 😬: \n", e)
@@ -25,21 +34,10 @@ def CreateTable():
 
 def StoreRawTransformed(data : dict):
     try:
-        res = CreateTable()
-        if res is not None :
-            for video in data["items"]:
-                videoData = {
-                    "video_id" : video["id"],
-                    "title" : video["snippet"]["title"],
-                    "description" : video["snippet"]["description"],
-                    "published_at" : video["snippet"]["publishedAt"],
-                    "channel_id" : video["snippet"]["channelId"],
-                    "channel_title" : video["snippet"]["channelTitle"],
-                    "view_count" : video["statistics"]["viewCount"],
-                    "like_count" : video["statistics"]["likeCount"],
-                    "comment_count" : video["statistics"]["commentCount"],
-                    "favorite_count" : video["statistics"]["favoriteCount"],
-                    "dislike_count" : video["statistics"]["dislikeCount"],
+        res = CreateTableandInsert()
+        if res is not False: 
+            cur.execute(res[0], [data])
+            cur.execute(res[1], [data])
         
     except Exception as e:
         print("Something went wrong 😬: \n", e)
