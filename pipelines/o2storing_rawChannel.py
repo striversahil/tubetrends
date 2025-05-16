@@ -73,9 +73,9 @@ def storeRawChannel(channelIds: list) -> list:
                     "createdAt": item["snippet"]["publishedAt"],
                     "profilePic": item["snippet"]["thumbnails"]["default"]["url"],
                     "country": item["snippet"].get("country", None),
-                    "viewCount": item["statistics"]["viewCount"],
-                    "subscriberCount": item["statistics"]["subscriberCount"],
-                    "videoCount": item["statistics"]["videoCount"],
+                    "viewCount": int(item["statistics"]["viewCount"]),
+                    "subscriberCount": int(item["statistics"]["subscriberCount"]),
+                    "videoCount": int(item["statistics"]["videoCount"]),
                     "isKids": item.get("status", {}).get("madeForKids", False),
                 }
                 cur.execute(

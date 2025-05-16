@@ -4,14 +4,15 @@ CREATE TABLE IF NOT EXISTS video (
   title VARCHAR,
   trending_id VARCHAR, 
   publishedAt TIMESTAMP,
+  category VARCHAR,
   -- channelId UUID REFERENCES channel(id), -- Uncomment when channel table is ready
   channelId VARCHAR,
   channelName VARCHAR,
   thumbnail VARCHAR,
   tags JSONB DEFAULT '[]', 
-  duration VARCHAR,
-  viewCount VARCHAR,
-  likeCount VARCHAR,
-  commentCount VARCHAR,
+  duration NUMBER,
+  viewCount NUMBER,
+  likeCount NUMBER,
+  commentCount NUMBER,
   timestamp TIMESTAMP DEFAULT now()
 );

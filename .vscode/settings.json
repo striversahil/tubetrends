@@ -1,4 +1,5 @@
 {
   "workbench.settings.editor": "ui",
-  "workbench.settings.showSuggestions": false
+  "workbench.settings.showSuggestions": false,
+  "files.autoSave": "onFocusChange"
 }

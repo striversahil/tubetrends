@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS channel (
       createdAt VARCHAR,
       profilePic VARCHAR,
       country VARCHAR,
-      viewCount VARCHAR,
-      subscriberCount VARCHAR,
-      videoCount VARCHAR,
+      viewCount NUMBER,
+      subscriberCount NUMBER,
+      videoCount NUMBER,
       isKids BOOLEAN,
       timestamp TIMESTAMP DEFAULT now()
 );

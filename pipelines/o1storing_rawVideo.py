@@ -5,6 +5,7 @@ from data.index import getTrending
 import json
 from connection.mongoDb import Db
 from datetime import datetime
+import isodate
 
 
 def createTableandInsert() -> str | bool:
@@ -33,7 +34,7 @@ def createTableandInsert() -> str | bool:
         return False
 
 
-def storeRawVideo() -> None:
+def storeRawVideo() -> list | bool:
     """
     Storing the Raw Video data in the Postgres DB
     with the trending id
@@ -44,16 +45,16 @@ def storeRawVideo() -> None:
         trendingApi = getTrending("IN")
         if trendingApi is None:
             print("Error fetching trending data")
-            return
+            return False
 
         video_query = createTableandInsert()
         if video_query is False:
             print("Error creating table or insert query")
-            return
+            return False
 
         trending_id = rawStoreMongo(trendingApi)
 
-        for item in trendingApi["items"]:
+        for index, item in trendingApi["items"]:
 
             # This is to avoid duplicate channel
             if item["snippet"]["channelId"] not in channelIds:
@@ -64,14 +65,17 @@ def storeRawVideo() -> None:
                 "title": item["snippet"]["title"],
                 "trendingId": str(trending_id),
                 "publishedAt": item["snippet"]["publishedAt"],
+                "category": categoryParser(item["snippet"]["categoryId"]),
                 "channelId": item["snippet"]["channelId"],
                 "channelName": item["snippet"]["channelTitle"],
                 "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
                 "tags": item["snippet"].get("tags", []),
-                "duration": item["contentDetails"].get("duration", "PT0S"),
-                "viewCount": item["statistics"].get("viewCount", 0),
-                "likeCount": item["statistics"].get("likeCount", 0),
-                "commentCount": item["statistics"].get("commentCount", 0),
+                "duration": convert_duration(
+                    item["contentDetails"].get("duration", "PT0S")
+                ),
+                "viewCount": int(item["statistics"].get("viewCount", 0)),
+                "likeCount": int(item["statistics"].get("likeCount", 0)),
+                "commentCount": int(item["statistics"].get("commentCount", 0)),
             }
             cur.execute(
                 video_query,
@@ -103,6 +107,18 @@ def storeRawVideo() -> None:
         return False
 
 
+def convert_duration(duration: str) -> int:
+    """
+    Convert ISO 8601 duration to seconds
+    """
+    try:
+        duration = isodate.parse_duration(duration)
+        return int(duration.total_seconds())
+    except Exception as e:
+        print("Error converting duration: ", e)
+        return 0
+
+
 def rawStoreMongo(data: dict) -> bool | str:
     """
     Storing the Raw API trending data into MongoDB with timestamp
@@ -119,6 +135,46 @@ def rawStoreMongo(data: dict) -> bool | str:
     except:
         print("Error inserting trending data into MongoDB")
         return False
+
+
+def categoryParser(categoryId: str) -> str:
+    """
+    Parse the category ID to category name
+    """
+    categories = {
+        "1": "Film & Animation",
+        "2": "Autos & Vehicles",
+        "10": "Music",
+        "15": "Pets & Animals",
+        "17": "Sports",
+        "18": "Short Movies",
+        "19": "Travel & Events",
+        "20": "Gaming",
+        "21": "Videoblogging",
+        "22": "People & Blogs",
+        "23": "Comedy",
+        "24": "Entertainment",
+        "25": "News & Politics",
+        "26": "Howto & Style",
+        "27": "Education",
+        "28": "Science & Technology",
+        "30": "Movies",
+        "31": "Anime/Animation",
+        "32": "Action/Adventure",
+        "33": "Classics",
+        "34": "Comedy",
+        "35": "Documentary",
+        "36": "Drama",
+        "37": "Family",
+        "38": "Foreign",
+        "39": "Horror",
+        "40": "Sci-Fi/Fantasy",
+        "41": "Thriller",
+        "42": "Shorts",
+        "43": "Shows",
+        "44": "Trailers",
+    }
+    return categories.get(categoryId, "Unknown")
 
 
 # cur.execute("SELECT NOW()")
