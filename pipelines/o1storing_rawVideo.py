@@ -6,6 +6,7 @@ import json
 from connection.mongoDb import Db
 from datetime import datetime
 import isodate
+import traceback
 
 
 def createTableandInsert() -> str | bool:
@@ -54,7 +55,7 @@ def storeRawVideo() -> list | bool:
 
         trending_id = rawStoreMongo(trendingApi)
 
-        for index, item in trendingApi["items"]:
+        for item in trendingApi["items"]:
 
             # This is to avoid duplicate channel
             if item["snippet"]["channelId"] not in channelIds:
@@ -84,6 +85,7 @@ def storeRawVideo() -> list | bool:
                     video["title"],
                     video["trendingId"],
                     video["publishedAt"],
+                    video["category"],
                     video["channelId"],
                     video["channelName"],
                     video["thumbnail"],
@@ -104,6 +106,7 @@ def storeRawVideo() -> list | bool:
 
     except Exception as e:
         print("Something went wrong 😬: \n", e)
+        traceback.print_exc()
         return False
 
 

@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS video (
   channelName VARCHAR,
   thumbnail VARCHAR,
   tags JSONB DEFAULT '[]', 
-  duration NUMBER,
-  viewCount NUMBER,
-  likeCount NUMBER,
-  commentCount NUMBER,
+  duration INTEGER,
+  viewCount BIGINT,
+  likeCount BIGINT,
+  commentCount BIGINT,
   timestamp TIMESTAMP DEFAULT now()
 );
