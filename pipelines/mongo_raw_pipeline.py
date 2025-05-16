@@ -3,15 +3,16 @@ from datetime import datetime
 
 
 # Storing the trending data with timestamp
-def StoreTrending(data: dict):
-    trendingData = {"timestamp": datetime.now(), "trending_data": data}
+def StoreTrending(data: dict) -> bool | str:
+    trendingData = {"trendingDataRaw": data, "createdAt": datetime.now()}
     try:
-        print("Inserting trending data into MongoDB")
-        Db["Trending"].insert_one(trendingData)
+        res = Db["Trending"].insert_one(trendingData)
+
         print("Inserted trending data into MongoDB")
         # print(f"Inserted trending data with ID: {result}")
-        return True
+        return res.inserted_id
     except:
+        print("Error inserting trending data into MongoDB")
         return False
 
 
