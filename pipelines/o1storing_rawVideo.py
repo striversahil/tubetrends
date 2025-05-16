@@ -7,19 +7,21 @@ from connection.mongoDb import Db
 from datetime import datetime
 
 
-def CreateTableandInsert() -> str | bool:
+def createTableandInsert() -> str | bool:
     """
     Creating the table and returning the insert query
     for the transformed data
+
+    return: str | bool
     """
     try:
         base_path = "/".join(path.dirname(path.realpath(__file__)).split("/")[:-1])
         video = None
 
-        with open(base_path + "/sql/createRawTransformed_video.sql", "r") as f:
+        with open(base_path + "/sql/createRawVideo.sql", "r") as f:
             cur.execute(f.read())
 
-        with open(base_path + "/sql/insertRawTransformed_video.sql", "r") as f:
+        with open(base_path + "/sql/insertRawVideo.sql", "r") as f:
             video = f.read()
 
         return video
@@ -29,7 +31,7 @@ def CreateTableandInsert() -> str | bool:
         return False
 
 
-def StoreRawVideo() -> None:
+def storeRawVideo() -> None:
     """
     Storing the Raw Video data in the Postgres DB
     with the trending id
@@ -42,12 +44,12 @@ def StoreRawVideo() -> None:
             print("Error fetching trending data")
             return
 
-        video_query = CreateTableandInsert()
+        video_query = createTableandInsert()
         if video_query is False:
             print("Error creating table or insert query")
             return
 
-        trending_id = RawStoreMongo(trendingApi)
+        trending_id = rawStoreMongo(trendingApi)
 
         for item in trendingApi["items"]:
 
@@ -88,7 +90,7 @@ def StoreRawVideo() -> None:
             )
 
             print(
-                f"✅ Raw video with ID '{video['videoId']}' stored successfully in Postgres."
+                f"⚡ Raw video with ID '{video['videoId']}' stored successfully in Postgres."
             )
 
         return channelIds
@@ -99,7 +101,7 @@ def StoreRawVideo() -> None:
         return False
 
 
-def RawStoreMongo(data: dict) -> bool | str:
+def rawStoreMongo(data: dict) -> bool | str:
     """
     Storing the Raw API trending data into MongoDB with timestamp
 
