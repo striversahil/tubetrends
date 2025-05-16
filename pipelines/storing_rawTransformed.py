@@ -5,8 +5,10 @@ import json
 
 
 def CreateTableandInsert() -> dict | bool:
+    """
+    Creating the tables in PostgreSQL and returning the insert queries
+    """
     try:
-
         base_path = "/".join(path.dirname(path.realpath(__file__)).split("/")[:-1])
         video = None
         trending = None
@@ -32,7 +34,7 @@ def CreateTableandInsert() -> dict | bool:
 
 def StoreRawTransformed(data: dict) -> None:
     """
-    Storing the transformed data in PostgreSQL
+    Storing the transformed valuable data in PostgreSQL
     """
     try:
         res = CreateTableandInsert()
