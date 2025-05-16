@@ -15,13 +15,15 @@ def createTableandInsert() -> str | bool:
     return: str | bool
     """
     try:
-        base_path = "/".join(path.dirname(path.realpath(__file__)).split("/")[:-1])
+        base_path = "/".join(
+            path.dirname(path.realpath(__file__)).split("/")[:-1] + ["sql/"]
+        )
         video = None
 
-        with open(base_path + "/sql/createRawVideo.sql", "r") as f:
+        with open(base_path + "createRawVideo.sql", "r") as f:
             cur.execute(f.read())
 
-        with open(base_path + "/sql/insertRawVideo.sql", "r") as f:
+        with open(base_path + "insertRawVideo.sql", "r") as f:
             video = f.read()
 
         return video

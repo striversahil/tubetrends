@@ -2,7 +2,7 @@
 from os import path
 from connection.postgres import cur
 from data.index import getChannel
-import json
+import traceback
 from connection.mongoDb import Db
 from datetime import datetime
 
@@ -10,31 +10,33 @@ from datetime import datetime
 def createTableandInsert() -> str | bool:
     """
     Creating the table and returning the insert query
-    for the transformed data
+    for the raw data
 
     return: str | bool
     """
     try:
-        base_path = "/".join(path.dirname(path.realpath(__file__)).split("/")[:-1])
-        video = None
+        base_path = "/".join(
+            path.dirname(path.realpath(__file__)).split("/")[:-1] + ["sql/"]
+        )
+        channel = None
 
-        with open(base_path + "/sql/createRawTransformed_video.sql", "r") as f:
+        with open(base_path + "createRawChannel.sql", "r") as f:
             cur.execute(f.read())
 
-        with open(base_path + "/sql/insertRawTransformed_video.sql", "r") as f:
-            video = f.read()
+        with open(base_path + "insertRawChannel.sql", "r") as f:
+            channel = f.read()
 
-        return video
+        return channel
 
     except Exception as e:
         print("Error creating table or insert query for video: \n", e)
         return False
 
 
-def storeRawChannel(channelId: list) -> list:
+def storeRawChannel(channelIds: list) -> list:
     """
     Storing the Raw Video data in the Postgres DB
-    with the trending id
+    with the channel id
     """
     try:
         channel_query = createTableandInsert()
@@ -43,61 +45,64 @@ def storeRawChannel(channelId: list) -> list:
             print("Error creating table or insert query")
             return
 
-        for channel in channelId:
-            channelApi = getChannel(channel)
+        for channelId in channelIds:
+            storedChannel = lookupChannel(channelId)
+            if storedChannel is not None:
+                print(
+                    f"💡 Channel with ID '{channelId}' already exists in Postgres. Skipping..."
+                )
+                continue
+
+            channelApi = getChannel(channelId)
             if channelApi is None:
                 print("Error fetching channel data")
                 return
 
+            mongo_id = rawStoreMongo(channelApi)
+            if mongo_id is False:
+                print("Error storing channel data in MongoDB")
+                return
             # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            trending_id = rawStoreMongo()
 
-            for item in trendingApi["items"]:
+            for item in channelApi["items"]:
 
-                # This is to avoid duplicate channel
-                if item["snippet"]["channelId"] not in channelIds:
-                    channelIds.append(item["snippet"]["channelId"])
-
-                video = {
-                    "videoId": item["id"],
+                channel = {
+                    "channelId": item["id"],
                     "title": item["snippet"]["title"],
-                    "trendingId": str(trending_id),
-                    "publishedAt": item["snippet"]["publishedAt"],
-                    "channelId": item["snippet"]["channelId"],
-                    "channelName": item["snippet"]["channelTitle"],
-                    "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
-                    "tags": item["snippet"].get("tags", []),
-                    "duration": item["contentDetails"].get("duration", "PT0S"),
-                    "viewCount": item["statistics"].get("viewCount", 0),
-                    "likeCount": item["statistics"].get("likeCount", 0),
-                    "commentCount": item["statistics"].get("commentCount", 0),
+                    "description": item["snippet"].get("description", None),
+                    "createdAt": item["snippet"]["publishedAt"],
+                    "profilePic": item["snippet"]["thumbnails"]["default"]["url"],
+                    "country": item["snippet"].get("country", None),
+                    "viewCount": item["statistics"]["viewCount"],
+                    "subscriberCount": item["statistics"]["subscriberCount"],
+                    "videoCount": item["statistics"]["videoCount"],
+                    "isKids": item.get("status", {}).get("madeForKids", False),
                 }
                 cur.execute(
-                    video_query,
+                    channel_query,
                     (
-                        video["videoId"],
-                        video["title"],
-                        video["trendingId"],
-                        video["publishedAt"],
-                        video["channelId"],
-                        video["channelName"],
-                        video["thumbnail"],
-                        json.dumps(video["tags"]),
-                        video["duration"],
-                        video["viewCount"],
-                        video["likeCount"],
-                        video["commentCount"],
+                        channel["channelId"],
+                        channel["title"],
+                        channel["description"],
+                        channel["createdAt"],
+                        channel["profilePic"],
+                        channel["country"],
+                        channel["viewCount"],
+                        channel["subscriberCount"],
+                        channel["videoCount"],
+                        channel["isKids"],
                     ),
                 )
 
                 print(
-                    f"⚡ Raw video with ID '{video['videoId']}' stored successfully in Postgres."
+                    f"⚡ Raw channel with ID '{channel['channelId']}' stored successfully in Postgres."
                 )
 
         # cur.execute(res[1], [data])
 
     except Exception as e:
         print("Something went wrong 😬: \n", e)
+        traceback.print_exc()
         return False
 
 
@@ -109,18 +114,17 @@ def lookupChannel(channelId: str) -> dict | None:
 
     try:
         cur.execute(
-            "SELECT * FROM channel WHERE channelId = %s",
+            "SELECT channelId, title, createdAt FROM channel WHERE channelId = %s",
             (channelId,),
         )
         channelData = cur.fetchone()
 
         if channelData is None:
-            print("Channel data not found")
             return None
 
         return {
             "channelId": channelData[0],
-            "channelName": channelData[1],
+            "title": channelData[1],
             "createdAt": channelData[2],
         }
 
@@ -138,8 +142,9 @@ def rawStoreMongo(data: dict) -> bool | str:
     channelData = {"channelDataRaw": data, "createdAt": datetime.now()}
     try:
         res = Db["Channel"].insert_one(channelData)
-
-        print("Inserted Channel data into MongoDB")
+        if res is None:
+            print("Error inserting channel data into MongoDB")
+            return False
         return res.inserted_id
     except:
         print("Error inserting Channel data into MongoDB")
