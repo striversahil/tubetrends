@@ -7,7 +7,7 @@ from connection.mongoDb import Db
 from datetime import datetime
 
 
-def CreateTableandInsert() -> dict | bool:
+def CreateTableandInsert() -> str | bool:
     """
     Creating the table and returning the insert query
     for the transformed data
@@ -25,29 +25,36 @@ def CreateTableandInsert() -> dict | bool:
         return video
 
     except Exception as e:
-        print("Something went wrong 😬: \n", e)
+        print("Error creating table or insert query for video: \n", e)
         return False
 
 
-def StoreRawVideo(trending_id: str, data: dict) -> None:
+def StoreRawVideo() -> None:
     """
     Storing the Raw Video data in the Postgres DB
     with the trending id
     """
+    channelIds: list = []
+
     try:
         trendingApi = getTrending("IN")
         if trendingApi is None:
             print("Error fetching trending data")
             return
 
-        video = CreateTableandInsert()
-        if video is False:
+        video_query = CreateTableandInsert()
+        if video_query is False:
             print("Error creating table or insert query")
             return
 
         trending_id = RawStoreMongo(trendingApi)
 
-        for item in data["items"]:
+        for item in trendingApi["items"]:
+
+            # This is to avoid duplicate channel
+            if item["snippet"]["channelId"] not in channelIds:
+                channelIds.append(item["snippet"]["channelId"])
+
             video = {
                 "videoId": item["id"],
                 "title": item["snippet"]["title"],
@@ -63,7 +70,7 @@ def StoreRawVideo(trending_id: str, data: dict) -> None:
                 "commentCount": item["statistics"].get("commentCount", 0),
             }
             cur.execute(
-                video,
+                video_query,
                 (
                     video["videoId"],
                     video["title"],
@@ -80,11 +87,16 @@ def StoreRawVideo(trending_id: str, data: dict) -> None:
                 ),
             )
 
-            print("Raw Video Stored Successfully")
-            # cur.execute(res[1], [data])
+            print(
+                f"✅ Raw video with ID '{video['videoId']}' stored successfully in Postgres."
+            )
+
+        return channelIds
+        # cur.execute(res[1], [data])
 
     except Exception as e:
         print("Something went wrong 😬: \n", e)
+        return False
 
 
 def RawStoreMongo(data: dict) -> bool | str:
