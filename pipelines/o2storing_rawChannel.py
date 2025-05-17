@@ -3,6 +3,7 @@ from os import path
 from connection.postgres import cur
 from data.index import getChannel
 import traceback
+import os
 from connection.mongoDb import Db
 from datetime import datetime
 
@@ -37,6 +38,9 @@ def storeRawChannel(channelIds: list) -> list:
     """
     Storing the Raw Video data in the Postgres DB
     with the channel id
+
+    channelIds: list of channel ids to be stored
+    return: list
     """
     try:
         channel_query = createTableandInsert()
@@ -141,7 +145,7 @@ def rawStoreMongo(data: dict) -> bool | str:
 
     channelData = {"channelDataRaw": data, "createdAt": datetime.now()}
     try:
-        res = Db["Channel"].insert_one(channelData)
+        res = Db[os.getenv("MONGODB_COLLECTION_NAME_CHANNEL")].insert_one(channelData)
         if res is None:
             print("Error inserting channel data into MongoDB")
             return False

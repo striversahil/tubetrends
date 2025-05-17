@@ -3,6 +3,7 @@ from os import path
 from connection.postgres import cur
 from data.index import getTrending
 import json
+import os
 from connection.mongoDb import Db
 from datetime import datetime
 import isodate
@@ -55,13 +56,14 @@ def storeRawVideo() -> list | bool:
 
         trending_id = rawStoreMongo(trendingApi)
 
-        for item in trendingApi["items"]:
+        for index, item in enumerate(trendingApi["items"]):
 
             # This is to avoid duplicate channel
             if item["snippet"]["channelId"] not in channelIds:
                 channelIds.append(item["snippet"]["channelId"])
 
             video = {
+                "ranking": index + 1,
                 "videoId": item["id"],
                 "title": item["snippet"]["title"],
                 "trendingId": str(trending_id),
@@ -81,6 +83,7 @@ def storeRawVideo() -> list | bool:
             cur.execute(
                 video_query,
                 (
+                    video["ranking"],
                     video["videoId"],
                     video["title"],
                     video["trendingId"],
@@ -113,6 +116,9 @@ def storeRawVideo() -> list | bool:
 def convert_duration(duration: str) -> int:
     """
     Convert ISO 8601 duration to seconds
+
+    :param duration: ISO 8601 duration string (e.g., "PT1H30M")
+    :return: Duration in seconds
     """
     try:
         duration = isodate.parse_duration(duration)
@@ -130,7 +136,7 @@ def rawStoreMongo(data: dict) -> bool | str:
 
     trendingData = {"trendingDataRaw": data, "createdAt": datetime.now()}
     try:
-        res = Db["Trending"].insert_one(trendingData)
+        res = Db[os.getenv("MONGODB_COLLECTION_NAME_VIDEO")].insert_one(trendingData)
 
         print("Inserted trending data into MongoDB")
         # print(f"Inserted trending data with ID: {result}")

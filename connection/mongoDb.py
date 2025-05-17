@@ -12,6 +12,5 @@ try:
 except Exception as e:
     print("MongoDB Connection Error : \n", e)
 
-
-Db = client["TubeTrends"]
+Db = client[os.getenv("MONGODB_NAME")]
 # channelDb = client["Channel"]
