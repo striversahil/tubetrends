@@ -6,8 +6,10 @@ env:
   GLOBAL_ENV_VAR: "🌍 Hello from the top!"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  secret-job:
+    runs-on : ubuntu-latest
     steps:
-      - name: Print env var
-        run: echo $GLOBAL_ENV_VAR
+      - name : Print secret
+        run : echo "Secret is ${{ secrets.MY_SECRET }}"
+      - name : Print global env var
+        run : echo "Global env var is $GLOBAL_ENV_VAR"
