@@ -3,8 +3,17 @@ on:
   schedule:
     - cron: '0 */1 * * *' # Runs every hour
   workflow_dispatch:
+
+env :
+  YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  MONGODB_NAME: ${{ secrets.MONGODB_NAME }}
+  MONGODB_COLLECTION_NAME_CHANNEL: ${{ secrets.MONGODB_COLLECTION_NAME_CHANNEL }}
+  MONGODB_COLLECTION_NAME_VIDEO: ${{ secrets.MONGODB_COLLECTION_NAME_VIDEO }}
+  POSTGRES_URI: ${{ secrets.POSTGRES_URI }}
+
 jobs:
-  build:  
+  run-script:  
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,11 +31,16 @@ jobs:
 
       - name: Run script
         run: |
-          python getData.py
-          python getChannelData.py
-      - name: Commit and push changes
+          python main.py
+
+      - name : Automate README Update
+        run : |
+          echo  "🕒 Action run at $(date -u)" >> logs/action-log.txt
+
+      - name: Commit log update
         run: |
-          git config --local user.name "github-actions"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Update data"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add logs/action-log.txt
+          git commit -m "🔄 Log update: $(date -u)"
+          git push
