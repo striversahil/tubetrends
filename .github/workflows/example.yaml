@@ -2,16 +2,18 @@ name: My Workflow
 
 on: [push]
 
+env:
+  GLOBAL_ENV_VAR: "my_global_value"
+  YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
 jobs:
   secret-job:
     runs-on: ubuntu-latest
     steps:
       - name: Print secret
-        env:
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: echo "Secret is ${YOUTUBE_API_KEY:0:5}"
+        run: echo "Secret is $YOUTUBE_API_KEY"
 
       - name: Print global env var
         env:
           GLOBAL_ENV_VAR: ${{ secrets.GLOBAL_ENV_VAR }}
-        run: echo "Global env var is $GLOBAL_ENV_VAR"
+        run: echo "Global env var is ${GLOBAL_ENV_VAR:0:10}"
