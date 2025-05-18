@@ -10,8 +10,6 @@ jobs:
     runs-on : ubuntu-latest
     steps:
       - name : Print secret
-        env : 
-          MY_SECRET: ${{ secrets.MY_SECRET }}
-        run : echo "Secret is $MY_SECRET"
+        run : echo "Secret is $YOUTUBE_API_KEY"
       - name : Print global env var
         run : echo "Global env var is $GLOBAL_ENV_VAR"
