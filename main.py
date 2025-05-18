@@ -1,5 +1,6 @@
 from pipelines.o1storing_rawVideo import storeRawVideo
 from pipelines.o2storing_rawChannel import storeRawChannel
+from connection.postgres import PostgresConnection
 from dotenv import load_dotenv
 
 
