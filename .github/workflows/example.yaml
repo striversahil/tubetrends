@@ -9,7 +9,7 @@ jobs:
       - name: Print secret
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: echo "Secret is $YOUTUBE_API_KEY"
+        run: echo "Secret is ${YOUTUBE_API_KEY:0:5}"
 
       - name: Print global env var
         env:
