@@ -1,11 +1,8 @@
 name : Get YouTube Trending Data and Channel
 on:
-  push:
-    branches:
-      - main
   schedule:
     - cron: '0 * * * *' # Runs every hour
-  workflow_dispatch:
+  workflow_dispatch:    # Manual trigger from GitHub UI
 
 env :
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
