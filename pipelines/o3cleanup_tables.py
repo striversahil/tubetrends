@@ -33,9 +33,6 @@ def postgresCleanup():
     except Exception as e:
         print("Error during cleanup of tables: \n", e)
         Db.rollback()
-    finally:
-        Db.close()
-        print("Database connection closed.")
 
 
 def cleanup_tables():
@@ -54,8 +51,6 @@ def cleanup_tables():
         Db.rollback()
         traceback.print_exc()
         return False
-    finally:
-        print("Database connection closed.")
 
 
 def mongoCleanup():
@@ -76,6 +71,3 @@ def mongoCleanup():
 
     except Exception as e:
         print("Error during cleanup of MongoDB collections: \n", e)
-    finally:
-        Db.close()
-        print("MongoDB connection closed.")
