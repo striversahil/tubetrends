@@ -21,6 +21,7 @@ permissions:
 
 jobs:
   scheduledGetData:
+    name: Get YouTube Trending Data and Channel
     runs-on: ubuntu-latest
     steps:
       - name: 📃 Checkout repository
@@ -41,8 +42,10 @@ jobs:
           python main.py
 
   logsUpdate:
+    name: Update Logs
     runs-on: ubuntu-latest
-    depends-on: scheduledGetData
+    needs:
+      - scheduledGetData
     steps:
       - name: 📃 Checkout repository
         uses: actions/checkout@v2
