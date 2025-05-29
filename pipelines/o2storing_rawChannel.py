@@ -103,6 +103,7 @@ def storeRawChannel(channelIds: list) -> list:
                 )
 
         # cur.execute(res[1], [data])
+        return True
 
     except Exception as e:
         print("Something went wrong 😬: \n", e)

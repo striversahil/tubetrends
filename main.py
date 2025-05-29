@@ -1,5 +1,6 @@
 from pipelines.o1storing_rawVideo import storeRawVideo
 from pipelines.o2storing_rawChannel import storeRawChannel
+from pipelines.o3cleanup_tables import cleanup_tables
 from dotenv import load_dotenv
 
 
@@ -15,4 +16,16 @@ if __name__ == "__main__":
         exit(1)
     else:
         print("✅ Raw Video Pipeline Completed")
-        storeRawChannel(channels)
+        stored_channels = storeRawChannel(channels)
+        if not stored_channels:
+            print("❌ Error in storing raw channel Pipeline")
+            exit(1)
+        else:
+            print("✅ Raw Channel Pipeline Completed")
+            status_cleanup = cleanup_tables()
+            if not status_cleanup:
+                print("❌ Error in cleanup tables Pipeline")
+                exit(1)
+            else:
+                print("✅ Cleanup Tables Pipeline Completed")
+
