@@ -42,7 +42,7 @@ jobs:
 
   logsUpdate:
     runs-on: ubuntu-latest
-    dependsOn: scheduledGetData
+    depends-on: scheduledGetData
     steps:
       - name: 📃 Checkout repository
         uses: actions/checkout@v2
