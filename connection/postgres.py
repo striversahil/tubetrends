@@ -2,7 +2,7 @@ import psycopg2
 import os
 
 
-def PostgresConnection() -> tuple | bool:
+def PostgresConnection():
     """
     Postgres Connection
     """
@@ -16,12 +16,12 @@ def PostgresConnection() -> tuple | bool:
 
         conn.autocommit = True
         cur = conn.cursor()
-        return cur, conn
+        return cur
     except Exception as e:
         print("Postgres Connection Error : \n", e)
 
-        return None, None
+        return None
 
 
 #  Global Instance of the Postgres Connection
-cur, conn = PostgresConnection()
+cur = PostgresConnection()

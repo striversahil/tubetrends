@@ -30,7 +30,6 @@ def postgresCleanup():
         )
         print("Cleaned up old rows from Channel table.")
 
-        Db.commit()
     except Exception as e:
         print("Error during cleanup of tables: \n", e)
         Db.rollback()
@@ -56,7 +55,6 @@ def cleanup_tables():
         traceback.print_exc()
         return False
     finally:
-        Db.close()
         print("Database connection closed.")
 
 
@@ -68,7 +66,7 @@ def mongoCleanup():
     try:
         print("Starting cleanup of old rows in MongoDB collections...")
         # Clean up RawVideo collection by less than 90 days old
-        
+
         Db.rawVideo.delete_many({"timestamp": {"$lt": datetime.now() - timedelta(days=90)}})
         print("Cleaned up old rows from RawVideo collection.")
 
