@@ -36,7 +36,7 @@ def createTableandInsert() -> str | bool:
         return False
 
 
-def storeRawVideo() -> list | bool:
+def storeRawVideo(country: str) -> list | bool:
     """
     Storing the Raw Video data in the Postgres DB
     with the trending id
@@ -44,7 +44,7 @@ def storeRawVideo() -> list | bool:
     channelIds: list = []
 
     try:
-        trendingApi = getTrending("IN")
+        trendingApi = getTrending(country)
         if trendingApi is None:
             print("Error fetching trending data")
             return False
@@ -63,6 +63,7 @@ def storeRawVideo() -> list | bool:
                 channelIds.append(item["snippet"]["channelId"])
 
             video = {
+                "region": country,
                 "ranking": index + 1,
                 "videoId": item["id"],
                 "title": item["snippet"]["title"],
@@ -83,6 +84,7 @@ def storeRawVideo() -> list | bool:
             cur.execute(
                 video_query,
                 (
+                    video["region"],
                     video["ranking"],
                     video["videoId"],
                     video["title"],

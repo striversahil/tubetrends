@@ -32,7 +32,6 @@ def postgresCleanup():
 
     except Exception as e:
         print("Error during cleanup of tables: \n", e)
-        Db.rollback()
 
 
 def cleanup_tables():
@@ -48,7 +47,6 @@ def cleanup_tables():
 
     except Exception as e:
         print("Error during cleanup of tables: \n", e)
-        Db.rollback()
         traceback.print_exc()
         return False
 
