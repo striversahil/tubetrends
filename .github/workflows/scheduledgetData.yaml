@@ -64,6 +64,7 @@ jobs:
           git pull origin main || true
           git config --global user.name 'github-actions[bot]'
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull
           git add .
           git commit -m "🔄 Log update: $(date -u)"
           git push
