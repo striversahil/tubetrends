@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS video (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  rankScore INTEGER,
+  rank_score INTEGER,
   videoId VARCHAR,
   title VARCHAR,
   trending_id VARCHAR, 
