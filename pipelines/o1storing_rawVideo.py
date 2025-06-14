@@ -64,7 +64,7 @@ def storeRawVideo(country: str) -> list | bool:
 
             video = {
                 "region": country,
-                "ranking": index + 1,
+                "ranking": 20 - (index + 1),
                 "videoId": item["id"],
                 "title": item["snippet"]["title"],
                 "trendingId": str(trending_id),
