@@ -4,11 +4,10 @@ from datetime import datetime, timedelta
 import traceback
 
 
-
 def postgresCleanup():
     """
     Function to clean up old rows in the Video and Channel tables
-    that are older than 90 days.
+    that are older than 30 days.
     """
     try:
         print("Starting cleanup of old rows in Video and Channel tables...")
@@ -16,7 +15,7 @@ def postgresCleanup():
         cur.execute(
             """
             DELETE FROM video
-            WHERE timestamp < NOW() - INTERVAL '90 days'
+            WHERE timestamp < NOW() - INTERVAL '30 days'
             """
         )
         print("Cleaned up old rows from Video table.")
@@ -25,7 +24,7 @@ def postgresCleanup():
         cur.execute(
             """
             DELETE FROM channel
-            WHERE timestamp < NOW() - INTERVAL '90 days'
+            WHERE timestamp < NOW() - INTERVAL '30 days'
             """
         )
         print("Cleaned up old rows from Channel table.")
@@ -36,7 +35,7 @@ def postgresCleanup():
 
 def cleanup_tables():
     """
-    Cleans up rows in Video and Channlel tables that are older than 90 days.
+    Cleans up rows in Video and Channlel tables that are older than 30 days.
     """
 
     try:
@@ -54,17 +53,21 @@ def cleanup_tables():
 def mongoCleanup():
     """
     Function to clean up old rows in the MongoDB collections
-    that are older than 90 days.
+    that are older than 30 days.
     """
     try:
         print("Starting cleanup of old rows in MongoDB collections...")
-        # Clean up RawVideo collection by less than 90 days old
+        # Clean up RawVideo collection by less than 30 days old
 
-        Db.rawVideo.delete_many({"timestamp": {"$lt": datetime.now() - timedelta(days=90)}})
+        Db.rawVideo.delete_many(
+            {"timestamp": {"$lt": datetime.now() - timedelta(days=30)}}
+        )
         print("Cleaned up old rows from RawVideo collection.")
 
         # Clean up RawChannel collection
-        Db.rawChannel.delete_many({"timestamp": {"$lt": datetime.now() - timedelta(days=90)}})
+        Db.rawChannel.delete_many(
+            {"timestamp": {"$lt": datetime.now() - timedelta(days=30)}}
+        )
         print("Cleaned up old rows from RawChannel collection.")
 
     except Exception as e:
