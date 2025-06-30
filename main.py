@@ -27,10 +27,11 @@ if __name__ == "__main__":
                 exit(1)
             else:
                 print("✅ Raw Channel Pipeline Completed")
-                status_cleanup = cleanup_tables()
-                if not status_cleanup:
-                    print("❌ Error in cleanup tables Pipeline")
-                    exit(1)
-                else:
-                    print("✅ Cleanup Tables Pipeline Completed")
 
+    #                      +++++++++++++++++++++++++++++ Pipeline Completed ++++++++++++++++++++++++++++
+    status_cleanup = cleanup_tables()
+    if not status_cleanup:
+        print("❌ Error in cleanup tables Pipeline")
+        exit(1)
+    else:
+        print("✅ Cleanup Tables Pipeline Completed")
