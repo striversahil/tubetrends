@@ -56,6 +56,10 @@ def storeRawVideo(country: str) -> list | bool:
 
         trending_id = rawStoreMongo(trendingApi)
 
+        if trending_id is False:
+            print("Error storing raw trending data in MongoDB")
+            return False
+
         for index, item in enumerate(trendingApi["items"]):
 
             # This is to avoid duplicate channel
