@@ -1,6 +1,6 @@
 from connection.postgres import cur
 from connection.mongoDb import Db
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import traceback
 
 
@@ -59,10 +59,10 @@ def mongoCleanup():
         print("Starting cleanup of old rows in MongoDB collections...")
         # Clean up RawVideo collection by less than 30 days old
 
-        print(datetime.now() - timedelta(days=30))
+        print(datetime.now(timezone.utc) - timedelta(days=30))
 
         videoDeleted = Db.rawVideo.delete_many(
-            {"createdAt": {"$lt": datetime.now() - timedelta(days=30)}}
+            {"createdAt": {"$lt": datetime.now(timezone.utc) - timedelta(days=30)}}
         )
         print(
             f"Cleaned up {videoDeleted.deleted_count} old rows from RawVideo collection."
