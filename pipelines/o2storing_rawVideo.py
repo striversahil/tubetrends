@@ -5,7 +5,7 @@ from data.index import getTrending
 import json
 import os
 from connection.mongoDb import Db
-from datetime import datetime
+from datetime import datetime, timezone
 import isodate
 import traceback
 
@@ -140,7 +140,7 @@ def rawStoreMongo(data: dict) -> bool | str:
 
     """
 
-    trendingData = {"trendingDataRaw": data, "createdAt": datetime.now()}
+    trendingData = {"trendingDataRaw": data, "createdAt": datetime.now(timezone.utc)}
     try:
         res = Db[os.getenv("MONGODB_COLLECTION_NAME_VIDEO")].insert_one(trendingData)
 

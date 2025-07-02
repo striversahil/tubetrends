@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS video (
   rank_score INTEGER,
   videoId VARCHAR,
   title VARCHAR,
-  trending_id VARCHAR, 
+  trending_id VARCHAR,
   publishedAt TIMESTAMP,
   category VARCHAR,
   -- channelId UUID REFERENCES channel(id), -- Uncomment when channel table is ready

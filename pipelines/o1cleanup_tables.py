@@ -59,19 +59,15 @@ def mongoCleanup():
         print("Starting cleanup of old rows in MongoDB collections...")
         # Clean up RawVideo collection by less than 30 days old
 
-        print(datetime.now(timezone.utc) - timedelta(days=30))
+        cuttoff_date = datetime.now(timezone.utc) - timedelta(days=30)
 
-        videoDeleted = Db.rawVideo.delete_many(
-            {"createdAt": {"$lt": datetime.now(timezone.utc) - timedelta(days=30)}}
-        )
+        videoDeleted = Db.rawVideo.delete_many({"createdAt": {"$lt": cuttoff_date}})
         print(
             f"Cleaned up {videoDeleted.deleted_count} old rows from RawVideo collection."
         )
 
         # Clean up RawChannel collection
-        channelDeleted = Db.rawChannel.delete_many(
-            {"createdAt": {"$lt": datetime.now() - timedelta(days=30)}}
-        )
+        channelDeleted = Db.rawChannel.delete_many({"createdAt": {"$lt": cuttoff_date}})
         print(
             f"Cleaned up {channelDeleted.deleted_count} old rows from RawChannel collection."
         )
