@@ -60,13 +60,13 @@ def mongoCleanup():
         # Clean up RawVideo collection by less than 30 days old
 
         Db.rawVideo.delete_many(
-            {"timestamp": {"$lt": datetime.now() - timedelta(days=30)}}
+            {"createdAt": {"$lt": datetime.now() - timedelta(days=30)}}
         )
         print("Cleaned up old rows from RawVideo collection.")
 
         # Clean up RawChannel collection
         Db.rawChannel.delete_many(
-            {"timestamp": {"$lt": datetime.now() - timedelta(days=30)}}
+            {"createdAt": {"$lt": datetime.now() - timedelta(days=30)}}
         )
         print("Cleaned up old rows from RawChannel collection.")
 
