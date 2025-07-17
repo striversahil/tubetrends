@@ -50,10 +50,10 @@ jobs:
       - name: 📃 Checkout repository
         uses: actions/checkout@v2
 
-      - name: 🗑️ Delete Logs more of than 3 Months.
+      - name: 🗑️ Delete Logs more of than 1 Month.
         run: |
-          find logs/ -type f -mtime +90 -delete;
-          echo "🗑️ Deleted logs older than 90 days"
+          find logs/ -type f -mtime +30 -delete;
+          echo "🗑️ Deleted logs older than 30 days"
 
       - name: 📂 Adding Logs Update in logs file
         run: |
