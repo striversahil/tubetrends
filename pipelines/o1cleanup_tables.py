@@ -57,20 +57,26 @@ def mongoCleanup():
     """
     try:
         print("Starting cleanup of old rows in MongoDB collections...")
-        # Clean up RawVideo collection by less than 30 days old
 
-        cuttoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        # Fix typo: cuttoff_date -> cutoff_date
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        print(f"Deleting documents older than: {cutoff_date}")
 
-        videoDeleted = Db.rawVideo.delete_many({"createdAt": {"$lt": cuttoff_date}})
+        # Clean up RawVideo collection
+        videoDeleted = Db.rawVideo.delete_many({"createdAt": {"$lt": cutoff_date}})
         print(
             f"Cleaned up {videoDeleted.deleted_count} old rows from RawVideo collection."
         )
 
         # Clean up RawChannel collection
-        channelDeleted = Db.rawChannel.delete_many({"createdAt": {"$lt": cuttoff_date}})
+        channelDeleted = Db.rawChannel.delete_many({"createdAt": {"$lt": cutoff_date}})
         print(
             f"Cleaned up {channelDeleted.deleted_count} old rows from RawChannel collection."
         )
 
+        return videoDeleted.deleted_count + channelDeleted.deleted_count
+
     except Exception as e:
         print("Error during cleanup of MongoDB collections: \n", e)
+        traceback.print_exc()
+        raise  # Re-raise the exception so the main function knows it failed
