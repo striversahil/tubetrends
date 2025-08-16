@@ -68,39 +68,39 @@ def storeRawChannel(channelIds: list) -> list:
                 return
             # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-            for item in channelApi["items"]:
+            item = channelApi["items"][0]
 
-                channel = {
-                    "channelId": item["id"],
-                    "title": item["snippet"]["title"],
-                    "description": item["snippet"].get("description", None),
-                    "createdAt": item["snippet"]["publishedAt"],
-                    "profilePic": item["snippet"]["thumbnails"]["default"]["url"],
-                    "country": item["snippet"].get("country", None),
-                    "viewCount": int(item["statistics"]["viewCount"]),
-                    "subscriberCount": int(item["statistics"]["subscriberCount"]),
-                    "videoCount": int(item["statistics"]["videoCount"]),
-                    "isKids": item.get("status", {}).get("madeForKids", False),
-                }
-                cur.execute(
-                    channel_query,
-                    (
-                        channel["channelId"],
-                        channel["title"],
-                        channel["description"],
-                        channel["createdAt"],
-                        channel["profilePic"],
-                        channel["country"],
-                        channel["viewCount"],
-                        channel["subscriberCount"],
-                        channel["videoCount"],
-                        channel["isKids"],
-                    ),
-                )
+            channel = {
+                "channelId": item["id"],
+                "title": item["snippet"]["title"],
+                "description": item["snippet"].get("description", None),
+                "createdAt": item["snippet"]["publishedAt"],
+                "profilePic": item["snippet"]["thumbnails"]["default"]["url"],
+                "country": item["snippet"].get("country", None),
+                "viewCount": int(item["statistics"]["viewCount"]),
+                "subscriberCount": int(item["statistics"]["subscriberCount"]),
+                "videoCount": int(item["statistics"]["videoCount"]),
+                "isKids": item.get("status", {}).get("madeForKids", False),
+            }
+            cur.execute(
+                channel_query,
+                (
+                    channel["channelId"],
+                    channel["title"],
+                    channel["description"],
+                    channel["createdAt"],
+                    channel["profilePic"],
+                    channel["country"],
+                    channel["viewCount"],
+                    channel["subscriberCount"],
+                    channel["videoCount"],
+                    channel["isKids"],
+                ),
+            )
 
-                print(
-                    f"⚡ Raw channel with ID '{channel['channelId']}' stored successfully in Postgres."
-                )
+            print(
+                f"⚡ Raw channel with ID '{channel['channelId']}' stored successfully in Postgres."
+            )
 
         # cur.execute(res[1], [data])
         return True

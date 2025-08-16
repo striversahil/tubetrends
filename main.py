@@ -24,13 +24,13 @@ if __name__ == "__main__":
         print(f"Starting Raw Video Pipeline for region: {region}")
         channels = storeRawVideo(region)
         if not channels:
-            print("❌ Error in storing raw video Pipeline")
+            print(f"❌ Error in storing raw video Pipeline for region : {region}")
             exit(1)
         else:
             print("✅ Raw Video Pipeline Completed")
             stored_channels = storeRawChannel(channels)
             if not stored_channels:
-                print("❌ Error in storing raw channel Pipeline")
+                print(f"❌ Error in storing raw channel Pipeline for region : {region}")
                 exit(1)
             else:
                 print("✅ Raw Channel Pipeline Completed")
