@@ -146,11 +146,11 @@ def rawStoreMongo(data: dict) -> bool | str:
 
     channelData = {"channelDataRaw": data, "createdAt": datetime.now()}
     try:
-        res = Db[os.getenv("MONGODB_COLLECTION_NAME_CHANNEL")].insert_one(channelData)
-        if res is None:
-            print("Error inserting channel data into MongoDB")
-            return False
-        return res.inserted_id
+        # res = Db[os.getenv("MONGODB_COLLECTION_NAME_CHANNEL")].insert_one(channelData)
+        # if res is None:
+        #     print("Error inserting channel data into MongoDB")
+        #     return False
+        return "channel_id_placeholder"
     except:
         print("Error inserting Channel data into MongoDB")
         return False
