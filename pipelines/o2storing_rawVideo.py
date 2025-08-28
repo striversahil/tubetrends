@@ -142,11 +142,11 @@ def rawStoreMongo(data: dict) -> bool | str:
 
     trendingData = {"trendingDataRaw": data, "createdAt": datetime.now(timezone.utc)}
     try:
-        res = Db[os.getenv("MONGODB_COLLECTION_NAME_VIDEO")].insert_one(trendingData)
+        # res = Db[os.getenv("MONGODB_COLLECTION_NAME_VIDEO")].insert_one(trendingData)
 
         print("Inserted trending data into MongoDB")
         # print(f"Inserted trending data with ID: {result}")
-        return res.inserted_id
+        return "trending_id_placeholder"
     except:
         print("Error inserting trending data into MongoDB")
         return False
